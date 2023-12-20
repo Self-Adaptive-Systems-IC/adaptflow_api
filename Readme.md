@@ -2,8 +2,6 @@
 
 ![GitHub repo size](https://img.shields.io/github/repo-size/Self-Adaptive-Systems-IC/adaptflow_api?style=for-the-badge)
 ![GitHub language count](https://img.shields.io/github/languages/count/Self-Adaptive-Systems-IC/adaptflow_api?style=for-the-badge)
-
-
 ![Python](https://img.shields.io/badge/Python-14354C?style=for-the-badge&logo=python&logoColor=white)
 
 <!-- <img src="imagem.png" alt="Exemplo imagem"> -->
