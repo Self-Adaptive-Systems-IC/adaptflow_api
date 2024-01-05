@@ -2,9 +2,7 @@ import os
 from os.path import exists
 from typing import List
 import pandas as pd
-from pycaret.classification import (
-    ClassificationExperiment
-)
+from pycaret.classification import ClassificationExperiment
 from src.classes.Model import Model
 
 
@@ -40,9 +38,13 @@ class Automl:
     Note:
         The class assumes the use of the PyCaret library for AutoML functionality.
     """
-    
+
     def __init__(
-            self, dataset, filename: str, metric: str = "Accuracy", target_position: int = -1
+        self,
+        dataset,
+        filename: str,
+        metric: str = "Accuracy",
+        target_position: int = -1,
     ) -> None:
         """Initialize the Automl instance for automated machine learning.
 
@@ -69,7 +71,7 @@ class Automl:
             fold=3,
             fix_imbalance=True,
             remove_outliers=True,
-            outliers_method='iforest',
+            outliers_method="iforest",
             # feature_selection=True,
             # feature_selection_method='classic',
             # feature_selection_estimator='lightgbm' ,
@@ -88,7 +90,7 @@ class Automl:
             List[Model]: List of 'n' selected machine learning models.
         """
         top_models = self._setup.compare_models(
-            sort=self.metric, n_select=n, verbose=False, exclude=['dummy']
+            sort=self.metric, n_select=n, verbose=False, exclude=["dummy"]
         )
         return [Model(estimator) for estimator in top_models]
 
@@ -129,7 +131,9 @@ class Automl:
         if exists(pickle_file):
             pickle_file = f"{pickle_file}_new"
 
-        saved_model = self._setup.save_model(model.get_estimator(), model_name=pickle_file, model_only=True)
+        saved_model = self._setup.save_model(
+            model.get_estimator(), model_name=pickle_file, model_only=True
+        )
         return pickle_file
 
     def eval_model(self, model: Model):
@@ -142,13 +146,25 @@ class Automl:
             Tuple[pd.DataFrame, pd.Series, pd.DataFrame, pd.Series, pd.DataFrame]:
                 A tuple containing X_train, y_train, X_test, y_test, and predictions DataFrame.
         """
-        x_train = self._setup.get_config('X_train')
-        y_train = self._setup.get_config('y_train')
-        x_test = self._setup.get_config('X_test')
-        y_test = self._setup.get_config('y_test')
-        return x_train, y_train, x_test, y_test, self._setup.predict_model(model.get_estimator())
+        x_train = self._setup.get_config("X_train")
+        y_train = self._setup.get_config("y_train")
+        x_test = self._setup.get_config("X_test")
+        y_test = self._setup.get_config("y_test")
+        return (
+            x_train,
+            y_train,
+            x_test,
+            y_test,
+            self._setup.predict_model(model.get_estimator()),
+        )
 
-    def generate_api(self, model: Model, api_name: str = "", host: str = "127.0.0.1", port: int = 5000) -> str:
+    def generate_api(
+        self,
+        model: Model,
+        api_name: str = "",
+        host: str = "127.0.0.1",
+        port: int = 5000,
+    ) -> str:
         """Generate a FastAPI script for serving the machine learning model as an API.
 
         Args:
@@ -167,7 +183,7 @@ class Automl:
 
         if api_name == "":
             api_name = f"{self.filename}_{model_name}"
-            
+
         score = 0.8
         input_data = x.iloc[0].to_dict()
         output_data = {"prediction": y.iloc[0][0], "score": score}
