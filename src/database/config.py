@@ -3,8 +3,8 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 import os
 
-from src.models.File import Base as BaseFile, File
-from src.models.Result import Base as BaseResult, Result
+from src.database.models.File import Base as BaseFile, File
+from src.database.models.Result import Base as BaseResult, Result
 
 DATABASE_URL = "sqlite:///./adapt.db"
 
