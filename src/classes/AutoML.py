@@ -189,6 +189,13 @@ class Automl:
         output_data = {"prediction": y.iloc[0][0], "score": score}
         model_result = "model['trained_model']"
 
+        dataset_features = {}
+
+        for column in self._dataset:
+            min = self._dataset[column].min()
+            max = self._dataset[column].max()
+            dataset_features[column] = (min, max)
+        print(dataset_features)
         query = f"""# -*- coding: utf-8 -*-
 import pandas as pd
 from pycaret.classification import load_model, predict_model
@@ -260,6 +267,10 @@ def load_new_model():
     global model
     model = load_model(cwd+"/files/pickle/{api_name}")
     return{{"status": "loaded", "model": str({model_result})}}
+
+@app.get("/get_features")
+def get_features():
+    return {dataset_features}
 
 # Define predict function
 @app.post("/predict", response_model=output_model)
