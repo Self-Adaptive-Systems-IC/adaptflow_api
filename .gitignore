@@ -179,3 +179,4 @@ tmp/*
 
 catboost_info/*
 .python-version
+*.db
