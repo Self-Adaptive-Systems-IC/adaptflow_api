@@ -57,8 +57,9 @@ def send_dataset_and_load_model(api_endpoint,models_dir,file_path, n, metric):
     with open(file_path, 'rb') as file:
         files = {"file": (os.path.basename(file_path), file, "text/csv")}
         # Make a POST request to the select_model endpoint with the file
+        print(f"Realizando a consulta para {n} modelos")
         response = requests.post(api_endpoint, files=files, data={'n': n, 'metric': metric})
-
+        print("Finalizado!!!")
         # Check the response status code
         if response.status_code == 200:
             # The request was successful, and you can process the response JSON
@@ -81,7 +82,7 @@ def send_dataset_and_load_model(api_endpoint,models_dir,file_path, n, metric):
         raise RuntimeError(f"Error: {e}")
 
 if __name__ == "__main__":
-    api_endpoint = "http://192.168.2.131:8000/select_model"
+    api_endpoint = "http://127.0.0.1:8000/select_model"
     file_path = "/home/romulolass/Codes/ml_datasets/dataset_edit.csv"
     target = "label"
     models_dir = "./tmp/loaded_models"
