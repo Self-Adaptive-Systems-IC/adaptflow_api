@@ -126,7 +126,8 @@ class Automl:
         """
         if model_name == "":
             model_name = model.get_model_name()
-        pickle_file = f"./tmp/models/{self.filename}_{model_name}"
+        pickle_file = f"./tmp/files/{self.filename.split('.')[0]}_{model_name}"
+        print(pickle_file)
 
         if exists(pickle_file):
             pickle_file = f"{pickle_file}_new"
@@ -181,6 +182,7 @@ class Automl:
         y = pd.DataFrame(self._setup.y_train)
         model_name = model.get_model_name()
 
+        print(api_name)
         if api_name == "":
             api_name = f"{self.filename}_{model_name}"
 
@@ -190,15 +192,20 @@ class Automl:
         model_result = "model['trained_model']"
 
         dataset_features = {}
+        
+        dataset_columns = self._dataset.columns
 
-        for column in self._dataset:
+        for column in dataset_columns:
             min = self._dataset[column].min()
             max = self._dataset[column].max()
             dataset_features[column] = (min, max)
         print(dataset_features)
+        
+        dataset_columns_str = ','.join(f'"{str(item)}"' for item in dataset_columns)
+        api_name_f = api_name.split("/")[-1]
         query = f"""# -*- coding: utf-8 -*-
 import pandas as pd
-from pycaret.classification import load_model, predict_model
+import joblib
 from fastapi import FastAPI, File, UploadFile
 import uvicorn
 from pydantic import create_model
@@ -209,22 +216,22 @@ import os
 # Create the app
 app = FastAPI()
 cwd = os.getcwd()
+
 # Load trained Pipeline
-model = load_model(cwd+"/fi`les/pickle/{self.filename}_{model_name}")
+model = joblib.load("./tmp/files/{api_name_f}.pkl")
+
 # Original dataset
-dataset_data = pd.read_csv(cwd+"/files/uploads/{self.filename}.csv")
-X_dataset = dataset_data.iloc[:,:-1]
-y_dataset = dataset_data.iloc[:,-1]
-tmp_dataset = cwd+"/files/tmp/{self.filename}_{model_name}.csv"
+tmp_dataset = cwd + "/tmp/files/{api_name_f}.csv"
+
 if os.path.exists(tmp_dataset):
     df_tmp = pd.read_csv(tmp_dataset)
 else:
-    df_tmp = dataset_data
+    df_tmp = pd.DataFrame(columns=[{dataset_columns_str}])
     df_tmp.to_csv(tmp_dataset, index=False)
 
 # Create input/output pydantic models
-input_model = create_model("{api_name}_input", **{input_data})
-output_model = create_model("{api_name}_output", **{output_data})
+input_model = create_model("{api_name_f}_input", **{input_data})
+output_model = create_model("{api_name_f}_output", **{output_data})
 
 # Valid the upload file
 def check_uploaded_file(file: File(...)):
@@ -246,7 +253,7 @@ def check_uploaded_file(file: File(...)):
     return file_path, {{"message": message}}
 
 # Check drift
-def check_drift_ks(new_data, old_data=X_dataset, alpha=0.05):
+def check_drift_ks(new_data, old_data, alpha=0.05):
     old_predictions = model.predict(old_data)
     new_predictions = model.predict(new_data)
     statistic, p_value = ks_2samp(old_predictions, new_predictions)
@@ -257,17 +264,6 @@ def check_drift_ks(new_data, old_data=X_dataset, alpha=0.05):
 def check_name():
     return {{"model": "{model.get_model_name()}"}}
 
-@app.post("/load_new_model")
-def load_new_model():
-    # api_name = 'dataset_edit'
-    path = cwd+"/files/pickle/" + "{api_name}"
-    if exists(cwd+"/files/pickle/" + "{api_name}" + "_new.pkl"):
-        os.rename(cwd+"/files/pickle/"+"{api_name}"+".pkl", cwd+"/files/pickle/"+"{api_name}"+"_old.pkl")
-        os.rename(cwd+"/files/pickle/"+"{api_name}"+"_new.pkl", cwd+"/files/pickle/"+"{api_name}"+".pkl")
-    global model
-    model = load_model(cwd+"/files/pickle/{api_name}")
-    return{{"status": "loaded", "model": str({model_result})}}
-
 @app.get("/get_features")
 def get_features():
     return {dataset_features}
@@ -276,11 +272,10 @@ def get_features():
 @app.post("/predict", response_model=output_model)
 def predict(data: input_model):
     data = pd.DataFrame([data.dict()])
-    predictions = predict_model(model, data=data)
-    prediction = (predictions["prediction_label"])
-    score = (predictions.iloc[0,-1])
-    print(model['trained_model'])
-    data.update({{'label': prediction}})
+    prediction = model.predict(data)[0]
+    probabilities = model.predict_proba(data)[0]
+    score = probabilities[prediction]
+    data["{self._dataset.columns[self._target_position]}"] = prediction
     print(data)
     global df_tmp
     df_tmp = pd.concat([df_tmp, pd.DataFrame(data)])
@@ -305,25 +300,9 @@ def check_drift(new_data: UploadFile = File(...), old_data: UploadFile = File(..
     res = "False" if x == False else "True"
     return {{"check":  res}}
 
-@app.get('/dataset_size')
-def dataset_size():
-    return {{"size": len(df_tmp)}}
-
-@app.post("/check_drift2")
-def check_drift2(value: int):
-    new_data = df_tmp.iloc[:value]
-    X_new = new_data.iloc[:,:-1]
-    y_new = new_data.iloc[:,-1]
-    old_data = df_tmp.iloc[value:]
-    X_old = old_data.iloc[:,:-1]
-    y_old = old_data.iloc[:,-1]
-    x = check_drift_ks(X_new, X_old)
-    res = "False" if x == False else "True"
-    return {{"check":  res}}
-
 if __name__ == "__main__":
-    uvicorn.run("{api_name}:app", host="{host}", port={port})
-    # uvicorn.run("{api_name}:app", host="{host}", port={port},reload=True)
+    uvicorn.run("{api_name_f}:app", host="{host}", port={port})
+    # uvicorn.run("{api_name_f}:app", host="{host}", port={port},reload=True)
 """
 
         path_to_save = f"{api_name}.py"

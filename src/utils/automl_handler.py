@@ -3,8 +3,8 @@ from src.utils.converter import file_to_base64
 import os
 
 PATH = os.getcwd()
-BASE_FOLDER = f"./tmp"
-API_FOLDER = "apis"
+BASE_FOLDER = f"{PATH}/tmp"
+API_FOLDER = "files"
 
 
 def train_model(automl: Automl, n: int = 1) -> list:

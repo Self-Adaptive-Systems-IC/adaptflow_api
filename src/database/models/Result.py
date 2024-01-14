@@ -16,3 +16,23 @@ class Result(Base):
     roc_score = Column(Float)
     pickle = Column(String)
     api = Column(String)
+
+    def json(self):
+        return {
+            "key": self.key,
+            "model": self.model,
+            "acc": self.accuracy,
+            "cross_val": self.cross_val,
+            "roc_score": self.roc_score,
+            "pickle": self.pickle,
+            "api": self.api,
+        }
+
+    def get_metrics(self):
+        return {
+            "key": self.key,
+            "model": self.model,
+            "acc": self.accuracy,
+            "cross_val": self.cross_val,
+            "roc_score": self.roc_score,
+        }
