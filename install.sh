@@ -3,7 +3,7 @@
 vitual_env_path=".venv"
 required_version="3.10.12"
 current_version=$(python -c 'import sys; print(".".join(map(str, sys.version_info[:3])))')
-folders=("tmp","tmp/apis","tmp/loaded_models","tmp/models")
+folders=("tmp","tmp/files","tmp/loaded_models")
 
 # Colors
 BBlack='\033[1;30m'  # Black
