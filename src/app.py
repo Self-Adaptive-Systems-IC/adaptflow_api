@@ -15,6 +15,8 @@ from src.database.models.Result import Result as DBResult
 
 from src.utils.automl_handler import train_model, tune_models, generate_files
 
+from src.utils.check_data_drift import check_data_drift
+
 app = FastAPI()
 
 # Initialize the database
@@ -162,3 +164,26 @@ def get_metrics(key: str, db: Session = Depends(get_db)):
     result = db.query(DBResult).filter(DBResult.key == key).first()
     result = result.get_metrics()
     return result
+
+
+@app.post("/check_drift")
+def check_drift(file_reference: UploadFile = File(...),file_current: UploadFile = File(...)):
+    try:
+        print(file_reference.content_type)
+        if file_reference.content_type != "text/csv":
+            return {"error": "000", "message": "Invalid file type"}
+        contents = file_reference.file
+        df_reference = pd.read_csv(contents)
+    except Exception as e:
+        return {"error": "001", "message": str(e)}
+    
+    try:
+        print(file_current.content_type)
+        if file_current.content_type != "text/csv":
+            return {"error": "000", "message": "Invalid file type"}
+        contents = file_current.file
+        df_current = pd.read_csv(contents)
+    except Exception as e:
+        return {"error": "001", "message": str(e)}
+    
+    return check_data_drift(df_reference,df_current)
