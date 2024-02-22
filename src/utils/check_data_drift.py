@@ -16,9 +16,12 @@ def check_data_drift(reference, current):
 
     data_drift_dataset_report.run(reference_data=ref, current_data=cur)
     data_drift_dataset_report
+    
+    
 
     report_json = json.loads(data_drift_dataset_report.json())['metrics'][1]['result']
 
+    print(data_drift_dataset_report.json())
     res = {}
 
     res['number_of_columns'] = report_json['number_of_columns']
