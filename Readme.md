@@ -25,7 +25,7 @@ Para instalar as dempendencias do AdaptFlow Api, siga estas etapas:
 
 Linux:
 ```bash
-poetry install
+poetry install --no-root
 ```
 
 
