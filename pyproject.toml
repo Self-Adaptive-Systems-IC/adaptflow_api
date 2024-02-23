@@ -1,0 +1,25 @@
+[tool.poetry]
+name = "adaptflow-api"
+version = "0.1.0"
+description = ""
+authors = ["Rômulo Soares <romulosoares@ice.ufjf.br>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "~3.10"
+kaleido = "^0.2.1, !=0.2.1.post1"
+pycaret = "^3.3.0"
+matplotlib = "<3.8.0"
+scipy = "^1.6.0, <=1.11.4"
+fastapi = "^0.109.2"
+python-multipart = "^0.0.9"
+streamlit = "^1.31.1"
+uvicorn = {extras = ["standard"], version = "^0.27.1"}
+seaborn = "^0.13.2"
+sqlalchemy = "^2.0.27"
+pydantic = "^2.6.1"
+evidently = "^0.4.16"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

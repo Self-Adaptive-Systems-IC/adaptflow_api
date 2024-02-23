@@ -1,18 +1,32 @@
 # 
-FROM python:3.9
+FROM python:3.10 as requirements-stage
+
+# 
+WORKDIR /tmp
+
+# 
+RUN pip install poetry
+
+# 
+COPY ./pyproject.toml ./poetry.lock* /tmp/
+
+# 
+RUN poetry export -f requirements.txt --output requirements.txt --without-hashes
+
+# 
+FROM python:3.10
 
 # 
 WORKDIR /code
 
 # 
-# COPY ./requirements_docker.txt /code/requirements.txt
-COPY ./install_docker.sh /code/install_docker.sh
+COPY --from=requirements-stage /tmp/requirements.txt /code/requirements.txt
 
 # 
-RUN ./install_docker.sh
+RUN pip install --no-cache-dir --upgrade -r /code/requirements.txt
 
 # 
-COPY ./ /code/app
+COPY ./ /code/
 
 # 
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "80"]
+CMD ["uvicorn", "src.app:app", "--host", "0.0.0.0", "--port", "82"]

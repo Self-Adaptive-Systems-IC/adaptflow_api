@@ -4,7 +4,6 @@
 ![GitHub language count](https://img.shields.io/github/languages/count/Self-Adaptive-Systems-IC/adaptflow_api?style=for-the-badge)
 ![Python](https://img.shields.io/badge/Python-14354C?style=for-the-badge&logo=python&logoColor=white)
 
-<!-- <img src="imagem.png" alt="Exemplo imagem"> -->
 
 > Api para realizar a seleção de um melhor algoritimo de aprendizado de máquina para um determinado dataset, com foco no apoio de tomada de decisão
 
@@ -16,17 +15,17 @@ O projeto ainda está em desenvolvimento e existem melhorias futuras
 
 Antes de começar, verifique se você atendeu aos seguintes requisitos:
 
-- Você instalou o  `Python 3.10`
-- Você tem uma máquina `Linux`.
-<!-- - Você leu `<guia / link / documentação_relacionada_ao_projeto>`. -->
+- Python 3.10
+- Linux
+- Poetry
 
 ## 🚀 Instalando AdaptFlow Api
 
-Para instalar o AdaptFlow Api, siga estas etapas:
+Para instalar as dempendencias do AdaptFlow Api, siga estas etapas:
 
 Linux:
 ```bash
-./install.sh
+poetry install
 ```
 
 
@@ -34,10 +33,12 @@ Linux:
 
 Para usar AdaptFlow Api, execute o comando:
 
-```
-uvicorn src.app:app --port 8000
+```bash
+poetry shell
+uvicorn src.app:app --host 0.0.0.0 --port 8000
 ```
 
+Acesse: `0.0.0.0:8000/docs `para visualizar a documentação e testar a api
 
 ## 🤝 Colaboradores
 
