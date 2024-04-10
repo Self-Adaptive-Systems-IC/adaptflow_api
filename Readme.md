@@ -5,23 +5,27 @@
 ![Python](https://img.shields.io/badge/Python-14354C?style=for-the-badge&logo=python&logoColor=white)
 
 
-> Api para realizar a seleção de um melhor algoritimo de aprendizado de máquina para um determinado dataset, com foco no apoio de tomada de decisão
+> Api para realizar a seleção de um melhor algoritmo de aprendizado de máquina para um determinado dataset, com foco no apoio de tomada de decisão.
+
+> To read this Readme in English, please visit: [Readme](Readme_enUs.md)
 
 ### Ajustes e melhorias
 
-O projeto ainda está em desenvolvimento e existem melhorias futuras
+O projeto ainda está em desenvolvimento e existem melhorias futuras.
 
 ## 💻 Pré-requisitos
 
 Antes de começar, verifique se você atendeu aos seguintes requisitos:
 
-- Python 3.10
-- Linux
+- Python 3.11
+- Linux e Windows
 - Poetry
+
+> O sistemas não foi testado totalmente no Windows, caso apresente alguma instabilidade entre em contato.
 
 ## 🚀 Instalando AdaptFlow Api
 
-Para instalar as dempendencias do AdaptFlow Api, siga estas etapas:
+Para instalar as dependências do AdaptFlow Api, siga estas etapas:
 
 Linux:
 ```bash
@@ -31,14 +35,16 @@ poetry install --no-root
 
 ## ☕ Usando AdaptFlow Api
 
-Para usar AdaptFlow Api, execute o comando:
+Para usar AdaptFlow Api, siga os seguintes etapas:
+
+1. Altere o arquivo .env.example e caso necessário atualize as variáveis
+2. Execute o comando:
 
 ```bash
-poetry shell
-uvicorn src.app:app --host 0.0.0.0 --port 8000
+poetry run python main.py
 ```
 
-Acesse: `0.0.0.0:8000/docs `para visualizar a documentação e testar a api
+Acesse: `127.0.0.1:8000/docs` ou troque pelo ip informado no arquivo .env, para visualizar a documentação e testar a api.
 
 ## 🤝 Colaboradores
 
@@ -47,7 +53,7 @@ Agradecemos às seguintes pessoas que contribuíram para este projeto:
 <table>
   <tr>
     <td align="center">
-      <a href="#" title="defina o titulo do link">
+      <a href="#" title="Devs">
         <img src="https://github.com/romulolassoares.png" width="100px;" alt="Foto do Rômulo Soares no GitHub"/><br>
         <sub>
           <b>Rômulo Soares</b>

@@ -19,6 +19,7 @@ seaborn = "^0.13.2"
 sqlalchemy = "^2.0.27"
 pydantic = "^2.6.1"
 evidently = "^0.4.16"
+python-dotenv = "^1.0.1"
 
 [build-system]
 requires = ["poetry-core"]
