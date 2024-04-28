@@ -10,9 +10,8 @@ RUN pip install poetry
 # 
 COPY ./pyproject.toml ./poetry.lock* /tmp/
 
-# 
-RUN rm requirements.txt
-RUN poetry export -f requirements.txt --output requirements.txt --without-hashes
+#
+RUN poetry export -f requirements2.txt --output requirements2.txt --without-hashes
 
 # 
 FROM python:3.11
