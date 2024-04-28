@@ -10,14 +10,14 @@ def create_directory_if_not_exists(directory_path):
         print(f"Directory '{directory_path}' already exists.")
 
 
+create_directory_if_not_exists("./tmp")
+create_directory_if_not_exists("./tmp/files")
+create_directory_if_not_exists("./tmp/loaded_models")
+host = str(config["IP"])
+port = int(config["PORT"])
+print(host, port)
+uvicorn.run("src.app:app", host=host, port=port)
 
-if __name__ == "__main__":
-    create_directory_if_not_exists("./tmp")
-    create_directory_if_not_exists("./tmp/files")
-    create_directory_if_not_exists("./tmp/loaded_models")
-    host = str(config["IP"])
-    port = int(config["PORT"])
-    print(host, port)
-    uvicorn.run("src.app:app", host=host, port=port)
 
+    
 
