@@ -8,8 +8,11 @@ def create_directory_if_not_exists(directory_path):
         print(f"Directory '{directory_path}' created successfully.")
     else:
         print(f"Directory '{directory_path}' already exists.")
-
-
+print(config)
+config = {
+"IP"="192.168.2.131",
+"PORT"="8000"
+}
 create_directory_if_not_exists("./tmp")
 create_directory_if_not_exists("./tmp/files")
 create_directory_if_not_exists("./tmp/loaded_models")
