@@ -6,4 +6,4 @@ COPY . .
 
 RUN poetry install
 
-ENTRYPOINT ["poetry", "run", "python", "-m", "annapurna.main"]
+ENTRYPOINT ["poetry", "run", "python", "-m", "main.py"]
