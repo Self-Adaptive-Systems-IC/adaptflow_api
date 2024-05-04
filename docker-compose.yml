@@ -1,0 +1,10 @@
+name: adapt_api
+services:
+    image_name:
+        restart: always
+        ports:
+            - 9999:99
+        environment:
+            IP: 0.0.0.0
+            PORT: 99
+        image: rlass/adaptflow:1.0
