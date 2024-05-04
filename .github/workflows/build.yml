@@ -27,4 +27,4 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           push: true
-          tags: romulolass/adaptflow_api:latest
+          tags: romulolass/adaptflow_api:0.1
