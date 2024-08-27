@@ -77,8 +77,10 @@ class Automl:
             # feature_selection_estimator='lightgbm' ,
             # n_features_to_select=1,
             session_id=None,
-            n_jobs=1,
+            n_jobs=2,
+            # is_multiclass=True,
         )
+        print(self._setup.get_config())
 
     def find_best_models(self, n: int) -> List[Model]:
         """Select the top 'n' machine learning models based on the specified metric.
