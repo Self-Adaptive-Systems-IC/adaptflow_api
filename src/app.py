@@ -90,63 +90,72 @@ def select_model(
     except Exception as e:
         return {"error": "001", "message": str(e)}
 
-    dataset_filename = file.filename
-    dataset_filename = "" if dataset_filename is None else dataset_filename
+    try:
+        dataset_filename = file.filename
+        dataset_filename = "" if dataset_filename is None else dataset_filename
+        print("********** Starting AutoML **********")
+        automl = Automl(df, dataset_filename, metric=metric)
 
-    print("********** Starting AutoML **********")
-    automl = Automl(df, dataset_filename, metric=metric)
+        print(f"-> Select {n} models")
+        models = train_model(automl, n)
 
-    print(f"-> Select {n} models")
-    models = train_model(automl, n)
+        print("-> Tunning the models")
+        tuned_models = tune_models(automl, models)
 
-    print("-> Tunning the models")
-    tuned_models = tune_models(automl, models)
+        print("-> Generating the files")
+        dataset_name = dataset_filename.split(".")[0]
+        print(dataset_name)
+        data_2_save = generate_files(automl, tuned_models, dataset_name)
 
-    print("-> Generating the files")
-    dataset_name = dataset_filename.split(".")[0]
-    print(dataset_name)
-    data_2_save = generate_files(automl, tuned_models, dataset_name)
+        print("********** Finishing AutoML **********")
 
-    print("********** Finishing AutoML **********")
+        print("-> Generating the keys for each json")
+        keys_dict = {}
+        for data in data_2_save:
+            key = json_2_sha256_key(data)
+            keys_dict[data["model"]] = key
 
-    print("-> Generating the keys for each json")
-    keys_dict = {}
-    for data in data_2_save:
-        key = json_2_sha256_key(data)
-        keys_dict[data["model"]] = key
+        print("-> Generating the metrics")
+        metrics_res = {}
+        for model in tuned_models:
+            X_train, y_train, X_test, y_test, df = automl.eval_model(model)
+            acc, cros_val, roc_score = evatuale_performance(
+                X_train, y_train, X_test, y_test, model.get_estimator()
+            )
+            metrics_res[model.get_model_name()] = {
+                "acc": acc,
+                "cross_val": cros_val,
+                "roc_score": roc_score,
+            }
 
-    print("-> Generating the metrics")
-    metrics_res = {}
-    for model in tuned_models:
-        X_train, y_train, X_test, y_test, df = automl.eval_model(model)
-        acc, cros_val, roc_score = evatuale_performance(
-            X_train, y_train, X_test, y_test, model.get_estimator()
-        )
-        metrics_res[model.get_model_name()] = {
-            "acc": acc,
-            "cross_val": cros_val,
-            "roc_score": roc_score,
-        }
+        res_json = {"keys": keys_dict, "data": data_2_save, "results": metrics_res}
+        print("-> Saving data to Database")
+    except Exception as e:
+        return {"error": "002", "message": f"Error during model processing: {str(e)}"}
 
-    res_json = {"keys": keys_dict, "data": data_2_save, "results": metrics_res}
-    print("-> Saving data to Database")
+    try:
+        for model, result_data in res_json["results"].items():
+            print(model)
+            res_instance = DBResult(
+                key=res_json["keys"][model],
+                model=model,
+                accuracy=result_data.get("acc"),
+                cross_val=result_data.get("cross_val"),
+                roc_score=result_data.get("roc_score"),
+                pickle=res_json["data"][0]["pickle"]["data"],
+                api=res_json["data"][0]["api"]["data"],
+            )
+            db.add(res_instance)
+            db.commit()
+            db.refresh(res_instance)
 
-    for model, result_data in res_json["results"].items():
-        print(model)
-        res_instance = DBResult(
-            key=res_json["keys"][model],
-            model=model,
-            accuracy=result_data.get("acc"),
-            cross_val=result_data.get("cross_val"),
-            roc_score=result_data.get("roc_score"),
-            pickle=res_json["data"][0]["pickle"]["data"],
-            api=res_json["data"][0]["api"]["data"],
-        )
-        db.add(res_instance)
-        db.commit()
-        db.refresh(res_instance)
+        print("***** FINISHED *****")
+    except Exception as e:
+        return {"error": "003", "message": f"Error saving data to database: {str(e)}"}
 
-    print("***** FINISHED *****")
+    # except Exception as e:
+    #     res_json = {"Failed": e}
+    
 
     return res_json
 

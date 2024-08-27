@@ -1,7 +1,7 @@
 import uvicorn
 from dotenv import dotenv_values,load_dotenv
 import os
-load_dotenv()
+# load_dotenv()
 # print(os.environ.get("IP"))
 IP = os.getenv('IP', '0.0.0.0')
 PORT = os.getenv('PORT', '99')
@@ -20,7 +20,8 @@ create_directory_if_not_exists("./tmp/files")
 create_directory_if_not_exists("./tmp/loaded_models")
 
 print(f"{str(IP)}:{int(PORT)}")
-uvicorn.run("src.app:app", host=str(IP), port=int(PORT))
+# uvicorn.run("src.app:app", host=str(IP))
+uvicorn.run("src.app:app", host=str(IP), port=str(PORT))
 
 
     
